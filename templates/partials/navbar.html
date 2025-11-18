@@ -1,0 +1,52 @@
+<!-- templates/partials/navbar.html -->
+
+<!-- ========== MOBILE NAVBAR (hanya < lg) ========== -->
+<nav class="navbar navbar-dark bg-dark d-lg-none fixed-top" id="topNavbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('dashboard') }}"> Lab Management</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+
+
+
+
+
+<!-- ========== OFFCANVAS UNTUK MOBILE ========== -->
+<div class="offcanvas offcanvas-start bg-dark text-white d-lg-none" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="width: 280px;">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <ul class="list-group list-group-flush">
+            {% include 'partials/sidebar_menu_items.html' %}
+        </ul>
+    </div>
+</div>
+
+<!-- ========== DESKTOP SIDEBAR (hanya lg+) ========== -->
+<aside class="d-none d-lg-block bg-dark text-white position-fixed top-0 start-0 vh-100" style="width: 280px; z-index: 1030; overflow-y: auto;">
+    <div class="p-3 border-bottom">
+        <a class="navbar-brand text-white text-decoration-none" href="{{ url_for('dashboard') }}"> Lab Management</a>
+    </div>
+    <div class="p-0">
+        <ul class="list-group list-group-flush">
+            {% include 'partials/sidebar_menu_items.html' %}
+        </ul>
+    </div>
+</aside>
+
+<!-- ========== PENYESUAIAN KONTEN UTAMA (untuk desktop) ========== -->
+{% if request.cookies.get('sidebar') != 'collapsed' %}
+    <style>
+        @media (min-width: 992px) {
+            body {
+                padding-left: 280px;
+            }
+        }
+    </style>
+{% endif %}

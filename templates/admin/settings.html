@@ -1,0 +1,51 @@
+<!-- templates/admin/settings.html -->
+
+{% extends "partials/base.html" %}
+
+{% block title %}Pengaturan Admin{% endblock %}
+
+{% block content %}
+<h2>⚙️ Pengaturan Admin</h2>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<form method="POST" enctype="multipart/form-data">
+    <!-- Favicon -->
+    <div class="mb-3">
+        <label class="form-label">Favicon (.ico, .png, .jpg, .jpeg)</label>
+        <input type="file" name="favicon" class="form-control" accept=".ico,.png,.jpg,.jpeg">
+        {% if favicon_path and favicon_path != 'uploads/favicon.ico' %}
+        <div class="mt-2">
+            <!-- ✅ Gunakan url_for static/uploads -->
+            <img src="{{ url_for('static', filename='uploads/favicon.ico') }}" alt="Favicon Sekarang" width="32" height="32">
+            <small class="text-muted ms-2">Favicon saat ini</small>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Logo -->
+    <div class="mb-3">
+        <label class="form-label">Logo Sekolah (.png, .jpg, .jpeg)</label>
+        <input type="file" name="logo" class="form-control" accept=".png,.jpg,.jpeg">
+        {% if logo_path and logo_path != 'uploads/logo.png' %}
+        <div class="mt-2">
+            <!-- ✅ Gunakan url_for static/uploads -->
+            <img src="{{ url_for('static', filename='uploads/logo.png') }}" alt="Logo Sekarang" width="100">
+            <small class="text-muted ms-2">Logo saat ini</small>
+        </div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+    <a href="{{ url_for('admin_index') }}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

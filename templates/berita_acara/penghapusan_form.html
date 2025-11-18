@@ -1,0 +1,85 @@
+<!-- templates/berita_acara/penghapusan_form.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Buat Berita Acara Penghapusan{% endblock %}
+
+{% block content %}
+<h2>Buat Berita Acara Penghapusan</h2>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Jenis Item *</label>
+        <select name="jenis" class="form-select" required id="jenisSelect">
+            <option value="">-- Pilih Jenis --</option>
+            <option value="bahan">Bahan</option>
+            <option value="alat">Alat</option>
+        </select>
+    </div>
+
+    <div class="mb-3" id="itemSelectContainer" style="display:none;">
+        <label class="form-label">Nama Item *</label>
+        <select name="item_id" class="form-select" id="itemSelect" required>
+            <option value="">-- Pilih Item --</option>
+            <!-- Opsi akan diisi oleh JavaScript -->
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Alasan *</label>
+        <select name="alasan" class="form-select" required>
+            <option value="Expired">Expired</option>
+            <option value="Rusak">Rusak</option>
+            <option value="Hilang">Hilang</option>
+            <option value="Lainnya">Lainnya</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nama Petugas *</label>
+        <input type="text" name="nama_petugas" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Keterangan</label>
+        <textarea name="keterangan" class="form-control" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Simpan Berita Acara</button>
+    <a href="{{ url_for('berita_acara_list') }}" class="btn btn-secondary w-100 mt-2">Batal</a>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const jenisSelect = document.getElementById('jenisSelect');
+    const itemSelectContainer = document.getElementById('itemSelectContainer');
+    const itemSelect = document.getElementById('itemSelect');
+
+    jenisSelect.addEventListener('change', function() {
+        const jenis = this.value;
+        itemSelectContainer.style.display = (jenis === 'bahan' || jenis === 'alat') ? 'block' : 'none';
+
+        if (jenis === 'bahan' || jenis === 'alat') {
+            // Kosongkan pilihan sebelumnya
+            itemSelect.innerHTML = '<option value="">-- Pilih Item --</option>';
+
+            // Panggil API untuk mendapatkan data
+            fetch(`/api/berita-acara/items/${jenis}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = `${item.name} (Kode: ${item.kode})`;
+                        itemSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching items:', error);
+                    // Tampilkan pesan error opsional ke pengguna
+                    itemSelect.innerHTML = '<option value="">Gagal memuat data</option>';
+                });
+        }
+    });
+});
+</script>
+{% endblock %}

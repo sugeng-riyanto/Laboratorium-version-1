@@ -1,0 +1,18 @@
+<!-- templates/admin/upload_all.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Upload All Data{% endblock %}
+
+{% block content %}
+<h2>Upload All Data</h2>
+<p>Upload file Excel yang memiliki sheet: <code>Bahan</code>, <code>Alat</code>, <code>Kejadian</code>.</p>
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Pilih File Excel (.xlsx)</label>
+        <input type="file" name="file" class="form-control" accept=".xlsx" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload All</button>
+    <a href="{{ url_for('admin_index') }}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

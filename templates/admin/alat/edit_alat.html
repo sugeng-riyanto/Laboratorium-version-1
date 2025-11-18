@@ -1,0 +1,136 @@
+<!-- templates/admin/alat/edit_alat.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Edit Alat{% endblock %}
+
+{% block content %}
+<h2>Edit Alat</h2>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <!-- ID dan nama_lab dikirim sebagai hidden field -->
+    <input type="hidden" name="id" value="{{ alat.id }}">
+    <input type="hidden" name="nama_lab" value="{{ alat.nama_lab }}">
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Kode *</label>
+                <input type="text" name="kode" class="form-control" value="{{ alat.kode }}" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Nama Alat *</label>
+                <input type="text" name="nama_alat" class="form-control" value="{{ alat.nama_alat }}" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Satuan *</label>
+                <select name="satuan" class="form-select" id="satuanSelect" required>
+                    <option value="">-- Pilih Satuan --</option>
+                    {% for satuan in satuan_alat %}
+                    <option value="{{ satuan }}" {% if alat.satuan == satuan %}selected{% endif %}>{{ satuan }}</option>
+                    {% endfor %}
+                    <option value="custom" {% if alat.satuan not in satuan_alat %}selected{% endif %}>Lainnya (isi manual)</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Kuantitas (unit) *</label>
+                <input type="number" name="kuantitas" class="form-control" value="{{ alat.kuantitas }}" min="1" required readonly>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Sedang Dipakai</label>
+                <input type="number" class="form-control" value="{{ alat.sedang_dipakai }}" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Rusak</label>
+                <input type="number" class="form-control" value="{{ alat.rusak }}" readonly>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Tersedia Baik</label>
+                <input type="number" class="form-control" value="{{ alat.tersedia_baik }}" readonly>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Tanggal Masuk *</label>
+                <input type="date" name="tgl_masuk" class="form-control" value="{{ alat.tgl_masuk.strftime('%Y-%m-%d') }}" required>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ GANTI BAGIAN INI -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Ubah Status</label>
+                <select name="status_action" class="form-select">
+                    <option value="">-- Pilih Aksi --</option>
+                    <option value="rusak">Tandai sebagai Rusak</option>
+                    <option value="baik">Perbaiki (Tandai sebagai Baik)</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Jumlah yang Diubah *</label>
+                <input type="number" name="jumlah_ubah" class="form-control" min="1" max="{{ alat.kuantitas }}" placeholder="Masukkan jumlah">
+                <div class="form-text">Maksimal: {{ alat.kuantitas }} unit</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sembunyikan input status lama -->
+    <input type="hidden" name="status" value="{{ alat.status }}">
+
+    <div class="mb-3">
+        <label class="form-label">Catatan</label>
+        <textarea name="catatan" class="form-control" rows="3">{{ alat.catatan }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('alat_list', lab=alat.nama_lab) }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<script>
+document.getElementById('satuanSelect').addEventListener('change', function() {
+    const customField = document.getElementById('customSatuanField');
+    customField.style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('satuanSelect');
+    const customField = document.getElementById('customSatuanField');
+    if (select.value === 'custom') {
+        customField.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

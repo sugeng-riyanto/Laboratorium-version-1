@@ -1,0 +1,306 @@
+<!-- templates/laporan/perbandingan.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Perbandingan Laporan Bulanan{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 Perbandingan Laporan Bulanan</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Jadwal</a>
+</div>
+
+<!-- Filter Bulan & Tahun -->
+<form method="GET" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="bulan" class="form-label">Bulan</label>
+            <select name="bulan" id="bulan" class="form-select">
+                {% for i in range(1, 13) %}
+                <option value="{{ i }}" {% if i == bulan_sekarang %}selected{% endif %}>{{ nama_bulan_list[i-1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="tahun" class="form-label">Tahun</label>
+            <input type="number" name="tahun" id="tahun" class="form-control" 
+                   min="2020" max="{{ tahun_sekarang + 1 }}" value="{{ tahun_sekarang }}">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Tampilkan</button>
+            <a href="{{ url_for('laporan_bulanan_perbandingan') }}" class="btn btn-secondary ms-2">Reset</a>
+        </div>
+    </div>
+</form>
+
+<!-- Ringkasan Kartu -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Bulan Ini</h5>
+                <p class="card-text display-6">{{ nama_bulan_sekarang }} {{ tahun_sekarang }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">1 Bulan Lalu</h5>
+                <p class="card-text display-6">
+                    {% if sorted_data|length >= 2 %}
+                        {{ sorted_data[-2]['nama_bulan'] }} {{ sorted_data[-2]['tahun'] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">2 Bulan Lalu</h5>
+                <p class="card-text display-6">
+                    {% if sorted_data|length >= 3 %}
+                        {{ sorted_data[-3]['nama_bulan'] }} {{ sorted_data[-3]['tahun'] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Data</h5>
+                <p class="card-text display-6">{{ sorted_data|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grafik Perbandingan -->
+<div class="row g-4 mb-4">
+    <!-- Bar Chart: Perbandingan Total -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5>Perbandingan Total Aktivitas</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="comparisonBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Line Chart: Tren Kejadian -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5>Tren Kejadian (3 Bulan Terakhir)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendLineChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doughnut Chart: Distribusi Kejadian per Lab -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Distribusi Kejadian per Lab (Bulan Ini vs 1 Bulan Lalu)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="distributionDoughnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabel Perbandingan Detail -->
+<div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Tabel Perbandingan Detail</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" style="width:100%">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Indikator</th>
+                        {% for d in sorted_data %}
+                        <th>{{ d['nama_bulan'] }} {{ d['tahun'] }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Jadwal</td>
+                        {% for d in sorted_data %}
+                        <td>{{ d['total_jadwal'] }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Total Kejadian</td>
+                        {% for d in sorted_data %}
+                        <td>{{ d['total_kejadian'] }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Bahan Expired</td>
+                        {% for d in sorted_data %}
+                        <td>{{ d['expired_bahan'] }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Alat Rusak</td>
+                        {% for d in sorted_data %}
+                        <td>{{ d['rusak_alat'] }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js  "></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js  "></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js  "></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // === FETCH DATA DARI API ANALYTICS ===
+    fetch('/api/analytics/data')
+        .then(response => response.json())
+        .then(data => {
+            // === CHART YANG SUDAH ADA ===
+            new Chart(document.getElementById('comparisonBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Total Jadwal',
+                            data: data.jadwal_data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                        },
+                        {
+                            label: 'Total Kejadian',
+                            data: data.kejadian_data,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                        },
+                        {
+                            label: 'Bahan Expired',
+                            data: data.expired_data,
+                            backgroundColor: 'rgba(255, 205, 86, 0.6)'
+                        },
+                        {
+                            label: 'Alat Rusak',
+                            data: data.rusak_data,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: false },
+                        y: { stacked: false, beginAtZero: true }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('trendLineChart'), {
+                type: 'line',
+                data: {
+                    labels: data.line_labels,
+                    datasets: [{
+                        label: 'Jumlah Kejadian',
+                        data: data.line_data,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            new Chart(document.getElementById('distributionDoughnutChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.doughnut_labels,
+                    datasets: [
+                        {
+                            label: 'Bulan Ini',
+                            data: data.doughnut_data_bulan_ini,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 205, 86, 0.6)',
+                                'rgba(75, 192, 192, 0.6)'
+                            ]
+                        },
+                        {
+                            label: '1 Bulan Lalu',
+                            data: data.doughnut_data_bulan_lalu,
+                            backgroundColor: [
+                                'rgba(255, 159, 64, 0.6)',
+                                'rgba(153, 102, 255, 0.6)',
+                                'rgba(255, 205, 86, 0.6)',
+                                'rgba(75, 192, 192, 0.6)'
+                            ]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // === INISIALISASI DATATABLES (jika ada tabel) ===
+            $('.table').DataTable({
+                "pageLength": 10,
+                "scrollY": "300px",
+                "scrollX": true,
+                "scrollCollapse": true,
+                "ordering": true,
+                "searching": true,
+                "language": {
+                    "search": "Cari:",
+                    "paginate": {
+                        "previous": "Sebelumnya",
+                        "next": "Berikutnya"
+                    },
+                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "emptyTable": "Tidak ada data tersedia"
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
+            alert('Gagal memuat data grafik. Silakan muat ulang halaman.');
+        });
+});
+</script>
+
+<!-- CSS untuk warna ungu -->
+<style>
+.bg-purple { background-color: #9c27b0 !important; }
+</style>
+{% endblock %}

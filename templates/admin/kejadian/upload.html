@@ -1,0 +1,31 @@
+<!-- templates/admin/kejadian/upload.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Upload Excel Kejadian{% endblock %}
+
+{% block content %}
+<h2>📤 Upload Excel Kejadian</h2>
+
+<!-- Info Format -->
+<div class="alert alert-info">
+    <strong>Format Excel:</strong> File harus berisi kolom: 
+    <code>tanggal_kejadian, nama_guru, kelas, sesi, alat_id, kuantitas_rusak, nama_lab</code>. 
+    Kolom opsional: <code>deskripsi, status</code>.
+
+    <!-- ✅ Tombol Download Template -->
+    <div class="mt-2">
+        <a href="{{ url_for('download_template', tipe='kejadian') }}" class="btn btn-sm btn-outline-light">
+            <i class="bi bi-file-earmark-arrow-down"></i> Download Template Excel
+        </a>
+    </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Pilih File Excel (.xlsx)</label>
+        <input type="file" name="file" class="form-control" accept=".xlsx" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload & Impor</button>
+    <a href="{{ url_for('kejadian_list') }}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

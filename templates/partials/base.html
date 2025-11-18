@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<!-- templates/partials/base.html - bagian <head> -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Lab Management{% endblock %}</title>
+
+    <!-- Favicon Custom -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='uploads/favicon.ico') }}">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+    <style>
+        /* Padding kiri untuk konten utama di desktop (karena sidebar fixed) */
+        @media (min-width: 992px) {
+            body {
+                padding-left: 280px;
+                padding-top: 20px;
+            }
+        }
+
+        /* Opsional: pastikan konten tidak tertutup di mobile */
+        @media (max-width: 991.98px) {
+            body {
+                padding-top: 56px; /* tinggi navbar mobile */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar & Sidebar (otomatis menyesuaikan mobile/desktop) -->
+    {% include 'partials/navbar.html' %}
+
+    <!-- Konten Utama -->
+    <!-- Navbar & Sidebar -->
+    {% include 'partials/navbar.html' %}
+
+        <!-- templates/partials/base.html - bagian header navbar -->
+
+<body>
+    <!-- Navbar & Sidebar -->
+    {% include 'partials/navbar.html' %}
+
+    <!-- Konten Utama -->
+    <main class="container-fluid px-3 px-md-4">
+        <!-- Header dengan Logo Custom -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <!-- ✅ Gunakan logo dari static/uploads -->
+                <img src="{{ url_for('static', filename='uploads/logo.png') }}" alt="Logo Sekolah" width="40" class="me-2">
+                {% block header_title %}Laboratory Management System{% endblock %}
+            </h2>
+            <div>
+                <!-- Tanggal & Waktu Real-time -->
+                <span id="currentDateTime" class="badge bg-info"></span>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Konten Halaman -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ... (scripts tetap sama) ... -->
+</body>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/mobile.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+    <footer class="text-center text-muted py-3 mt-4">
+    &copy; {{ current_year }} Laboratory Management System. All rights reserved. Sekolah Harapan Bangsa.
+</footer>
+</body>
+</html>

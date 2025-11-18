@@ -1,0 +1,102 @@
+<!-- templates/berita_acara/form.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Buat Berita Acara Penghapusan{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Buat Berita Acara Penghapusan</h2>
+
+    <form method="POST" class="needs-validation" novalidate>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Jenis Item *</label>
+                <select class="form-select" id="jenisSelect" name="jenis" required>
+                    <option value="">-- Pilih Jenis --</option>
+                    <option value="bahan">Bahan</option>
+                    <option value="alat">Alat</option>
+                </select>
+                <div class="invalid-feedback">Pilih jenis item.</div>
+            </div>
+
+            <div class="col-12" id="bahanField" style="display:none;">
+                <label class="form-label">Pilih Bahan *</label>
+                <select class="form-select" name="item_id" required>
+                    <option value="">-- Pilih Bahan --</option>
+                    {% for b in bahan_expired %}
+                    <option value="{{ b.id }}">{{ b.kode }} - {{ b.nama_bahan }} (Stok: {{ b.kuantitas }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Pilih bahan.</div>
+            </div>
+
+            <div class="col-12" id="alatField" style="display:none;">
+                <label class="form-label">Pilih Alat *</label>
+                <select class="form-select" name="item_id" required>
+                    <option value="">-- Pilih Alat --</option>
+                    {% for a in alat_rusak %}
+                    <option value="{{ a.id }}">{{ a.kode }} - {{ a.nama_alat }} (Stok: {{ a.kuantitas }})</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Pilih alat.</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Alasan *</label>
+                <select class="form-select" name="alasan" required>
+                    <option value="expired">Expired</option>
+                    <option value="rusak">Rusak</option>
+                </select>
+                <div class="invalid-feedback">Pilih alasan.</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Nama Petugas *</label>
+                <input type="text" name="nama_petugas" class="form-control" required>
+                <div class="invalid-feedback">Masukkan nama petugas.</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Keterangan</label>
+                <textarea name="keterangan" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary w-100">Simpan Berita Acara</button>
+                <a href="{{ url_for('berita_acara_list') }}" class="btn btn-secondary w-100 mt-2">Batal</a>
+            </div>
+        </div>
+    </form>
+
+    <script>
+    document.getElementById('jenisSelect').addEventListener('change', function() {
+        const jenis = this.value;
+        document.getElementById('bahanField').style.display = jenis === 'bahan' ? 'block' : 'none';
+        document.getElementById('alatField').style.display = jenis === 'alat' ? 'block' : 'none';
+    });
+
+    // Validasi form
+    (function() {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+    </script>
+</div>
+{% endblock %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>

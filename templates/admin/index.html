@@ -1,0 +1,84 @@
+{% extends "partials/base.html" %}
+
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<h2>Admin Panel</h2>
+
+<div class="row g-4">
+    <div class="col-md-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">Export Data</h5>
+            <p class="card-text">Download data per tabel.</p>
+            <a href="{{ url_for('download_excel', table_name='bahan') }}" class="btn btn-sm btn-outline-success mb-2 w-100">Download Bahan</a>
+            <a href="{{ url_for('download_excel', table_name='alat') }}" class="btn btn-sm btn-outline-success mb-2 w-100">Download Alat</a>
+            <a href="{{ url_for('download_excel', table_name='kejadian') }}" class="btn btn-sm btn-outline-success mb-2 w-100">Download Kejadian</a>
+            <a href="{{ url_for('download_all_excel') }}" class="btn btn-sm btn-success mt-3 w-100">Download Semua Tabel</a>
+        </div>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">Upload All</h5>
+            <p class="card-text">Upload file Excel untuk semua tabel sekaligus.</p>
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_all_excel') }}">
+                <div class="mb-3">
+                    <label class="form-label">Pilih File Excel (.xlsx)</label>
+                    <input type="file" name="file" class="form-control" accept=".xlsx" required>
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary w-100">Upload All</button>
+            </form>
+        </div>
+    </div>
+</div>
+    <!-- BAHAN -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Bahan</h5>
+                <p class="card-text">Kelola stok bahan per laboratorium.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('bahan_create', lab='Fisika') }}" class="btn btn-sm btn-primary">Tambah Bahan (Fisika)</a>
+                    <a href="{{ url_for('bahan_create', lab='Kimia') }}" class="btn btn-sm btn-primary">Tambah Bahan (Kimia)</a>
+                    <a href="{{ url_for('bahan_create', lab='Biologi') }}" class="btn btn-sm btn-primary">Tambah Bahan (Biologi)</a>
+                    <a href="{{ url_for('bahan_list') }}" class="btn btn-sm btn-outline-secondary mt-2">Lihat Semua Bahan</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALAT -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Alat</h5>
+                <p class="card-text">Kelola inventaris alat per laboratorium.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('alat_create', lab='Fisika') }}" class="btn btn-sm btn-primary">Tambah Alat (Fisika)</a>
+                    <a href="{{ url_for('alat_create', lab='Kimia') }}" class="btn btn-sm btn-primary">Tambah Alat (Kimia)</a>
+                    <a href="{{ url_for('alat_create', lab='Biologi') }}" class="btn btn-sm btn-primary">Tambah Alat (Biologi)</a>
+                    <a href="{{ url_for('alat_list') }}" class="btn btn-sm btn-outline-secondary mt-2">Lihat Semua Alat</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KEJADIAN -->
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Kejadian</h5>
+                <p class="card-text">Catat kejadian kerusakan per laboratorium.</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('kejadian_create', lab='Fisika') }}" class="btn btn-sm btn-primary">Tambah Kejadian (Fisika)</a>
+                    <a href="{{ url_for('kejadian_create', lab='Kimia') }}" class="btn btn-sm btn-primary">Tambah Kejadian (Kimia)</a>
+                    <a href="{{ url_for('kejadian_create', lab='Biologi') }}" class="btn btn-sm btn-primary">Tambah Kejadian (Biologi)</a>
+                    <a href="{{ url_for('kejadian_list') }}" class="btn btn-sm btn-outline-secondary mt-2">Lihat Semua Kejadian</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

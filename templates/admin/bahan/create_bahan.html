@@ -1,0 +1,110 @@
+<!-- templates/admin/bahan/create_bahan.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Tambah Bahan ({{ lab }}){% endblock %}
+
+{% block content %}
+<h2>Tambah Bahan ({{ lab }})</h2>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <!-- Lab sudah ditentukan di URL, jadi hidden field -->
+    <input type="hidden" name="nama_lab" value="{{ lab }}">
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Kode *</label>
+                <input type="text" name="kode" class="form-control" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">Nama Bahan *</label>
+                <input type="text" name="nama_bahan" class="form-control" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Kuantitas *</label>
+                <input type="number" step="0.01" name="kuantitas" class="form-control" value="0.0" min="0.01" required>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Satuan *</label>
+                <select name="satuan" class="form-select" id="satuanSelect" required>
+                    <option value="">-- Pilih Satuan --</option>
+                    {% for satuan in satuan_bahan %}
+                    <option value="{{ satuan }}">{{ satuan }}</option>
+                    {% endfor %}
+                    <option value="custom">Lainnya (isi manual)</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Tanggal Masuk *</label>
+                <input type="date" name="tgl_masuk" class="form-control" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Tanggal Expired</label>
+                <input type="date" name="tgl_expired" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Status Expired</label>
+                <select name="status_expired" class="form-select">
+                    <option value="belum expired">Belum Expired</option>
+                    <option value="expired">Expired</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label class="form-label">Catatan</label>
+                <textarea name="catatan" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('bahan_list', lab=lab) }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<script>
+document.getElementById('satuanSelect').addEventListener('change', function() {
+    const customField = document.getElementById('customSatuanField');
+    customField.style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+// Inisialisasi saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('satuanSelect');
+    const customField = document.getElementById('customSatuanField');
+    if (select.value === 'custom') {
+        customField.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

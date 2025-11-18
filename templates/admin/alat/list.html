@@ -1,0 +1,99 @@
+<!-- templates/admin/alat/list.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Daftar Alat ({{ lab }}){% endblock %}
+
+{% block content %}
+<h2>Daftar Alat ({{ lab }})</h2>
+
+<!-- Tombol Tambah & Upload - hanya muncul jika lab spesifik -->
+{% if lab in ['Fisika', 'Kimia', 'Biologi'] %}
+<div class="d-flex mb-3">
+    <a href="{{ url_for('alat_create', lab=lab) }}" class="btn btn-success">Tambah Alat</a>
+    <a href="{{ url_for('alat_upload') }}" class="btn btn-info ms-2">Upload Excel</a>
+</div>
+{% endif %}
+
+<div class="table-responsive">
+    <table id="alatTable" class="table table-striped table-hover" style="width:100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kode</th>
+                <th>Nama Alat</th>
+                <th>Satuan</th>
+                <th>Kuantitas</th>
+                <th>Sedang Dipakai</th>
+                <th>Rusak</th>
+                <th>Tersedia Baik</th>
+                <th>Tgl Masuk</th>
+                <th>Status</th>
+                <th>Lab</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in alat %}
+            <tr>
+                <td>{{ a.id }}</td>
+                <td>{{ a.kode }}</td>
+                <td>{{ a.nama_alat }}</td>
+                <td>{{ a.satuan }}</td>
+                <td>{{ a.kuantitas }}</td>
+                <td>{{ a.sedang_dipakai }}</td>
+                <td>{{ a.rusak }}</td>
+                <td>{{ a.tersedia_baik }}</td> <!-- Perbaikan: Gunakan properti yang benar -->
+                <td>{{ a.tgl_masuk }}</td>
+                <td>
+                    <span class="badge bg-{% if a.status == 'rusak' %}danger{% else %}success{% endif %}">
+                        {{ a.status }}
+                    </span>
+                </td>
+                <td>{{ a.nama_lab }}</td>
+                <td>
+                    <a href="{{ url_for('alat_edit', id=a.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form method="POST" action="{{ url_for('alat_delete', id=a.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus alat ini?')">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="12" class="text-center">Tidak ada data alat.</td></tr> <!-- Perbaikan: colspan 12 -->
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#alatTable').DataTable({
+        "pageLength": 10,
+        "scrollY": "300px",
+        "scrollX": true,
+        "scrollCollapse": true,
+        "ordering": true,
+        "searching": true,
+        "language": {
+            "search": "Cari:",
+            "paginate": {
+                "previous": "Sebelumnya",
+                "next": "Berikutnya"
+            },
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            "emptyTable": "Tidak ada data tersedia"
+        }
+    });
+});
+</script>
+{% endblock %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>

@@ -1,0 +1,161 @@
+<!-- templates/lab_requests/list.html -->
+{% extends "partials/base.html" %}
+<!-- templates/lab_requests/list.html -->
+
+
+{% block title %}Daftar Request Penggunaan Lab{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4">
+    <h2>Daftar Request Penggunaan Lab</h2>
+
+    <!-- Tombol Export/Refresh opsional -->
+    <!-- <div class="mb-3">
+        <a href="#" class="btn btn-outline-secondary btn-sm">Export Excel</a>
+    </div> -->
+
+    <!-- Tabel Responsif -->
+    <div class="table-responsive">
+        <table id="requestTable" class="table table-striped table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Sesi</th>
+                    <th>Guru</th>
+                    <th>Kelas</th>
+                    <th>Praktikum</th>
+                    <th>Lab</th>
+                    <th>Status</th>
+                    <th>Alat & Bahan</th>
+                    <th>Catatan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for j in jadwals %}
+                <tr>
+                    <td>{{ j.tanggal.strftime('%d %b %Y') }}</td>
+                    <td>{{ j.sesi }}</td>
+                    <td>{{ j.nama_guru }}</td>
+                    <td>{{ j.kelas }}</td>
+                    <td>{{ j.judul_praktikum }}</td>
+                    <td>{{ j.nama_lab }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if j.status_request == 'selesai' else 'blue' if j.status_request == 'menunggu' else 'danger' }}">
+                            {{ j.status_request }}
+                        </span>
+                    </td>
+                    <td>
+                        <!-- Alat -->
+                        {% if j.alat %}
+                            <strong>Alat:</strong><br>
+                            {% for a in j.alat %}
+                                {% set ja = j.jadwal_alat | selectattr('alat_id', '==', a.id) | list | first %}
+                                {{ a.nama_alat }} ({{ ja.kuantitas_digunakan }})<br>
+                            {% endfor %}
+                        {% endif %}
+                        <!-- Bahan -->
+                        {% if j.bahan %}
+                            <strong>Bahan:</strong><br>
+                            {% for b in j.bahan %}
+                                {% set jb = j.jadwal_bahan | selectattr('bahan_id', '==', b.id) | list | first %}
+                                {{ b.nama_bahan }} ({{ jb.kuantitas_digunakan }} {{ b.satuan }})<br>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>{{ j.catatan or '-' }}</td>
+                    <td>
+                        {% if j.status_request == 'menunggu' %}
+                            <!-- Form Update Status -->
+                            <form method="POST" action="{{ url_for('update_request_status', id=j.id) }}" style="display:inline;">
+                                <select name="status_request" class="form-select form-select-sm d-inline" style="width:auto; min-width: 100px;">
+                                    <option value="menunggu"{% if j.status_request == 'menunggu' %} selected{% endif %}>Menunggu</option>
+                                    <option value="tidak terlaksana">Tidak Terlaksana</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-primary ms-1">Simpan</button>
+                            </form>
+                            <!-- Tombol Batalkan (jika memenuhi syarat) -->
+                            {% if j.can_cancel %}
+                                <form method="POST" action="{{ url_for('cancel_request', id=j.id) }}" style="display:inline;" onsubmit="return confirm('Batalkan request ini?')">
+                                    <button type="submit" class="btn btn-sm btn-danger ms-1">Batalkan</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination manual (jika DataTables tidak menghandle) -->
+    <!-- Jika pakai DataTables, pagination sudah otomatis -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* CSS khusus untuk kolom Aksi agar tidak terlalu sempit */
+#requestTable th:last-child,
+#requestTable td:last-child {
+    white-space: nowrap;
+    width: 1%;
+}
+
+/* CSS untuk badge status */
+.badge {
+    font-size: 0.8rem;
+    padding: 0.35em 0.65em;
+}
+
+/* CSS untuk mobile: teks lebih kecil */
+@media (max-width: 768px) {
+    #requestTable th,
+    #requestTable td {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.3rem;
+    }
+    .form-select-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    $('#requestTable').DataTable({
+        "pageLength": 10,
+        "scrollX": true, // Wajib untuk responsive
+        "ordering": true,
+        "searching": true,
+        "language": {
+            "search": "Cari:",
+            "paginate": {
+                "previous": "Sebelumnya",
+                "next": "Berikutnya"
+            },
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            "emptyTable": "Tidak ada data tersedia"
+        },
+        "autoWidth": false, // Agar kolom tidak terlalu lebar
+        "columnDefs": [
+            { "width": "10%", "targets": [0, 1, 2, 3, 4, 5, 6] }, // Lebar kolom tetap
+            { "width": "20%", "targets": [7] }, // Kolom Alat & Bahan lebih lebar
+            { "width": "10%", "targets": [8] }, // Catatan
+            { "width": "15%", "targets": [9] }  // Aksi
+        ],
+        "initComplete": function () {
+            // Tambahkan class responsive pada tabel
+            this.api().table().node().parentElement.classList.add('table-responsive');
+        }
+    });
+});
+</script>
+{% endblock %}

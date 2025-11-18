@@ -1,0 +1,222 @@
+<!-- templates/booking_form.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Pesan Jadwal Lab{% endblock %}
+
+{% block content %}
+<h2>Pesan Jadwal Lab ({{ lab }})</h2>
+<p><strong>Hari:</strong> {{ day }}, <strong>Tanggal:</strong> {{ date }}, <strong>Sesi:</strong> {{ time_slot }}</p>
+
+<form method="POST" id="bookingForm">
+    <!-- ... bagian Nama Guru, Kelas, dll tetap sama ... -->
+    <div class="mb-3">
+        <label for="nama_guru" class="form-label">Nama Guru *</label>
+        <select name="nama_guru" id="nama_guru" class="form-select" required>
+            <option value="">-- Pilih Guru --</option>
+            {% for g in guru_list %}
+            <option value="{{ g.nama_guru }}" {% if g.nama_guru == request.form.get('nama_guru') %}selected{% endif %}>{{ g.nama_guru }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="kelas" class="form-label">Kelas *</label>
+        <select name="kelas" id="kelas" class="form-select" required>
+            <option value="">-- Pilih Kelas --</option>
+            {% for k in kelas_list %}
+            <option value="{{ k.nama_kelas }}" {% if k.nama_kelas == request.form.get('kelas') %}selected{% endif %}>{{ k.nama_kelas }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Judul Praktikum *</label>
+        <input type="text" name="judul_praktikum" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Jumlah Kelompok</label>
+        <input type="number" name="jumlah_kelompok" class="form-control" min="1" value="1" required>
+    </div>
+    
+    <!-- Tabs untuk Alat & Bahan -->
+    <ul class="nav nav-tabs mb-3" id="itemTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="alat-tab" data-bs-toggle="tab" data-bs-target="#alat" type="button">Alat</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="bahan-tab" data-bs-toggle="tab" data-bs-target="#bahan" type="button">Bahan</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="itemTabContent">
+        <!-- Tab Alat -->
+        <div class="tab-pane fade show active" id="alat" role="tabpanel">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <select class="form-select" id="filterLabAlat">
+                        <option value="">Semua Lab</option>
+                        <option value="Fisika">Fisika</option>
+                        <option value="Kimia">Kimia</option>
+                        <option value="Biologi">Biologi</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="searchAlat" placeholder="Cari nama alat...">
+                </div>
+            </div>
+
+            <div class="row" id="alatList">
+                {% for a in semua_alat %}
+                <div class="col-md-6 col-lg-4 mb-2 alat-item" data-lab="{{ a.nama_lab }}" data-nama="{{ a.nama_alat|lower }}">
+                    <div class="card">
+                        <div class="card-body p-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                       name="alat_id" value="{{ a.id }}" id="alat_{{ a.id }}"
+                                       {% if a.tersedia_baik <= 0 %}disabled{% endif %}>
+                                <label class="form-check-label" for="alat_{{ a.id }}">
+                                    <strong>{{ a.nama_alat }}</strong><br>
+                                    <small>
+                                        Lab: {{ a.nama_lab }} | 
+                                        Tersedia Baik: 
+                                        <span class="text-{{ 'danger' if a.tersedia_baik <= 0 else 'success' }}">
+                                            {{ a.tersedia_baik }} {{ a.satuan }}
+                                        </span>
+                                    </small>
+                                </label>
+                            </div>
+                            <input type="number" name="kuantitas_alat_{{ a.id }}" 
+                                   min="1" max="{{ a.tersedia_baik }}" 
+                                   class="form-control mt-1" 
+                                   placeholder="Jumlah" 
+                                   style="width: 80px; font-size: 0.85rem;"
+                                   {% if a.tersedia_baik <= 0 %}disabled value="0"{% else %}value="1"{% endif %}>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tab Bahan -->
+        <div class="tab-pane fade" id="bahan" role="tabpanel">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <select class="form-select" id="filterLabBahan">
+                        <option value="">Semua Lab</option>
+                        <option value="Fisika">Fisika</option>
+                        <option value="Kimia">Kimia</option>
+                        <option value="Biologi">Biologi</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="searchBahan" placeholder="Cari nama bahan...">
+                </div>
+            </div>
+
+            <div class="row" id="bahanList">
+                {% for b in semua_bahan %}
+                <div class="col-md-6 col-lg-4 mb-2 bahan-item" data-lab="{{ b.nama_lab }}" data-nama="{{ b.nama_bahan|lower }}">
+                    <div class="card">
+                        <div class="card-body p-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                       name="bahan_id" value="{{ b.id }}" id="bahan_{{ b.id }}"
+                                       {% if b.sisa_tersedia <= 0 %}disabled{% endif %}>
+                                <label class="form-check-label" for="bahan_{{ b.id }}">
+                                    <strong>{{ b.nama_bahan }}</strong><br>
+                                    <small>
+                                        Lab: {{ b.nama_lab }} | 
+                                        Sisa Tersedia: 
+                                        <span class="text-{{ 'danger' if b.sisa_tersedia <= 0 else 'success' }}">
+                                            {{ "%.2f"|format(b.sisa_tersedia) }} {{ b.satuan }}
+                                        </span>
+                                    </small>
+                                </label>
+                            </div>
+                            <input type="number" name="kuantitas_bahan_{{ b.id }}" 
+                                   min="0.1" step="0.1" max="{{ b.sisa_tersedia }}" 
+                                   class="form-control mt-1" 
+                                   placeholder="Jumlah" 
+                                   style="width: 80px; font-size: 0.85rem;"
+                                   {% if b.sisa_tersedia <= 0 %}disabled value="0"{% else %}value="0.1"{% endif %}>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Pilih Sesi -->
+    <div class="mb-3">
+        <label class="form-label">Sesi * (Pilih minimal 1)</label>
+        {% for time in times %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="sesi_pilihan" value="{{ time }}" id="sesi_{{ loop.index }}">
+            <label class="form-check-label" for="sesi_{{ loop.index }}">{{ time }}</label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="error-message" class="alert alert-danger" style="display:none;">
+        Harap pilih minimal 1 alat atau bahan!
+    </div>
+
+    <button type="submit" class="btn btn-primary">Konfirmasi Pesan</button>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<!-- ... script filter dan validasi tetap sama ... -->
+<script>
+// Filter Alat
+document.getElementById('filterLabAlat').addEventListener('change', filterAlat);
+document.getElementById('searchAlat').addEventListener('input', filterAlat);
+
+function filterAlat() {
+    const lab = document.getElementById('filterLabAlat').value;
+    const search = document.getElementById('searchAlat').value.toLowerCase();
+    const items = document.querySelectorAll('.alat-item');
+    items.forEach(item => {
+        const itemLab = item.dataset.lab;
+        const itemNama = item.dataset.nama;
+        const matchLab = !lab || itemLab === lab;
+        const matchSearch = !search || itemNama.includes(search);
+        item.style.display = (matchLab && matchSearch) ? 'block' : 'none';
+    });
+}
+
+// Filter Bahan
+document.getElementById('filterLabBahan').addEventListener('change', filterBahan);
+document.getElementById('searchBahan').addEventListener('input', filterBahan);
+
+function filterBahan() {
+    const lab = document.getElementById('filterLabBahan').value;
+    const search = document.getElementById('searchBahan').value.toLowerCase();
+    const items = document.querySelectorAll('.bahan-item');
+    items.forEach(item => {
+        const itemLab = item.dataset.lab;
+        const itemNama = item.dataset.nama;
+        const matchLab = !lab || itemLab === lab;
+        const matchSearch = !search || itemNama.includes(search);
+        item.style.display = (matchLab && matchSearch) ? 'block' : 'none';
+    });
+}
+
+// Validasi submit
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    const alatChecked = document.querySelectorAll('input[name="alat_id"]:checked').length;
+    const bahanChecked = document.querySelectorAll('input[name="bahan_id"]:checked').length;
+    const sesiChecked = document.querySelectorAll('input[name="sesi_pilihan"]:checked').length;
+    
+    if (alatChecked === 0 && bahanChecked === 0) {
+        e.preventDefault();
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    if (sesiChecked === 0) {
+        e.preventDefault();
+        alert('Harap pilih minimal 1 sesi!');
+    }
+});
+</script>
+{% endblock %}

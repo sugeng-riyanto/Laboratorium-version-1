@@ -1,0 +1,32 @@
+<!-- templates/admin/kelas/list.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Daftar Kelas{% endblock %}
+
+{% block content %}
+<h2>Daftar Kelas</h2>
+<a href="{{ url_for('kelas_create') }}" class="btn btn-primary mb-3">Tambah Kelas</a>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nama Kelas</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for k in kelas %}
+    <tr>
+      <td>{{ k.id }}</td>
+      <td>{{ k.nama_kelas }}</td>
+      <td>
+        <a href="{{ url_for('kelas_edit', id=k.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <form method="POST" action="{{ url_for('kelas_delete', id=k.id) }}" style="display:inline;" onsubmit="return confirm('Hapus kelas ini?')">
+          <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

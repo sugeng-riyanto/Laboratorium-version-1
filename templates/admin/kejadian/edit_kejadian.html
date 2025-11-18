@@ -1,0 +1,78 @@
+<!-- templates/admin/kejadian/edit_kejadian.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form method="POST">
+    <!-- Hidden field untuk nama_lab agar tetap dikirim saat submit -->
+    <input type="hidden" name="nama_lab" value="{{ kejadian.nama_lab }}">
+
+    <!-- Hanya tampilkan nama lab sebagai teks readonly untuk edit -->
+    <div class="mb-3">
+        <label class="form-label">Lab</label>
+        <input type="text" class="form-control" value="{{ kejadian.nama_lab }}" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Alat yang Rusak *</label>
+        <select name="alat_id" class="form-select" id="alatSelect" required>
+            <option value="">-- Pilih Alat --</option>
+            {% for a in alat_list %}
+            <option value="{{ a.id }}" {% if kejadian.alat_id == a.id %}selected{% endif %}>
+                {{ a.kode }} - {{ a.nama_alat }} (Stok: {{ a.kuantitas }}, Rusak: {{ a.rusak }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tanggal Kejadian *</label>
+        <input type="date" name="tanggal_kejadian" class="form-control"
+            value="{{ kejadian.tanggal_kejadian.strftime('%Y-%m-%d') }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nama Guru *</label>
+        <input type="text" name="nama_guru" class="form-control" value="{{ kejadian.nama_guru }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Kelas *</label>
+        <input type="text" name="kelas" class="form-control" value="{{ kejadian.kelas }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Sesi *</label>
+        <input type="text" name="sesi" class="form-control" value="{{ kejadian.sesi }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Jumlah Alat Rusak *</label>
+        <input type="number" name="kuantitas_rusak" class="form-control" min="1"
+            value="{{ kejadian.kuantitas_rusak }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deskripsi Kejadian</label>
+        <textarea name="deskripsi" class="form-control" rows="4">{{ kejadian.deskripsi }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status Penanganan</label>
+        <select name="status" class="form-select">
+            <option value="belum ditangani" {% if kejadian.status == 'belum ditangani' %}selected{% endif %}>
+                Belum Ditangani
+            </option>
+            <option value="sudah diperbaiki" {% if kejadian.status == 'sudah diperbaiki' %}selected{% endif %}>
+                Sudah Diperbaiki
+            </option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('kejadian_list', lab=kejadian.nama_lab) }}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

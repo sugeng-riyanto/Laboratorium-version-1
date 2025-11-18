@@ -1,0 +1,90 @@
+<!-- templates/admin/kejadian/form.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Lab *</label>
+        <select name="nama_lab" class="form-select" id="labSelect" required>
+            <option value="">-- Pilih Lab --</option>
+            <option value="Fisika" {% if lab == 'Fisika' %}selected{% endif %}>Fisika</option>
+            <option value="Kimia" {% if lab == 'Kimia' %}selected{% endif %}>Kimia</option>
+            <option value="Biologi" {% if lab == 'Biologi' %}selected{% endif %}>Biologi</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Alat yang Rusak *</label>
+        <select name="alat_id" class="form-select" id="alatSelect" required>
+            <option value="">-- Pilih Alat --</option>
+            {% for a in alat_list %}
+            <option value="{{ a.id }}">{{ a.kode }} - {{ a.nama_alat }} (Stok: {{ a.kuantitas }})</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tanggal Kejadian *</label>
+        <input type="date" name="tanggal_kejadian" class="form-control" 
+               value="{{ kejadian.tanggal_kejadian.strftime('%Y-%m-%d') if kejadian else '' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nama Guru *</label>
+        <input type="text" name="nama_guru" class="form-control" 
+               value="{{ kejadian.nama_guru if kejadian else '' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Kelas *</label>
+        <input type="text" name="kelas" class="form-control" 
+               value="{{ kejadian.kelas if kejadian else '' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Sesi *</label>
+        <input type="text" name="sesi" class="form-control" 
+               value="{{ kejadian.sesi if kejadian else '' }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Jumlah Alat Rusak *</label>
+        <input type="number" name="kuantitas_rusak" class="form-control" min="1"
+               value="{{ kejadian.kuantitas_rusak if kejadian else 1 }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deskripsi Kejadian</label>
+        <textarea name="deskripsi" class="form-control" rows="4">{{ kejadian.deskripsi if kejadian else '' }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status Penanganan</label>
+        <select name="status" class="form-select">
+            <option value="belum ditangani" {% if not kejadian or kejadian.status == 'belum ditangani' %}selected{% endif %}>
+                Belum Ditangani
+            </option>
+            <option value="sudah diperbaiki" {% if kejadian and kejadian.status == 'sudah diperbaiki' %}selected{% endif %}>
+                Sudah Diperbaiki
+            </option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('kejadian_list', lab=lab) }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<script>
+// Jika ingin reload halaman saat ganti lab (opsional)
+document.getElementById('labSelect').addEventListener('change', function() {
+    const selectedLab = this.value;
+    if (selectedLab) {
+        window.location.href = '/admin/kejadian/create/' + selectedLab;
+    }
+});
+</script>
+{% endblock %}

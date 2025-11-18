@@ -1,0 +1,248 @@
+<!-- Dashboard -->
+
+<!-- Analitik -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link text-white" href="{{ url_for('analytics_dashboard') }}">
+        <i class="bi bi-graph-up me-2"></i> Dashboard Analitik
+    </a>
+</li>
+
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link text-white" href="{{ url_for('dashboard') }}">
+        <i class="bi bi-calendar me-2"></i> Schedule
+    </a>
+</li>
+
+<!-- Request Lab -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link text-white" href="{{ url_for('lab_requests') }}">
+        <i class="bi bi-clipboard-check me-2"></i> Request Lab <!-- Ikon diperbaiki -->
+    </a>
+</li>
+
+<!-- Guru & Kelas -->
+<li class="list-group-item bg-dark border-0">
+    <a class="text-white text-decoration-none d-flex align-items-center" href="{{ url_for('guru_list') }}">
+        <i class="bi bi-person me-2"></i> Guru
+    </a>
+</li>
+<li class="list-group-item bg-dark border-0">
+    <a class="text-white text-decoration-none d-flex align-items-center" href="{{ url_for('kelas_list') }}">
+        <i class="bi bi-book me-2"></i> Kelas
+    </a>
+</li>
+
+<!-- Bahan -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#bahanCollapse" aria-expanded="false">
+        <i class="bi bi-droplet me-2"></i> Bahan
+    </a>
+    <div class="collapse" id="bahanCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('bahan_list', lab='Fisika') }}">
+                    <i class="bi bi-circle-fill me-2" style="color: #ff6b6b;"></i> Fisika
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('bahan_list', lab='Kimia') }}">
+                    <i class="bi bi-circle-fill me-2" style="color: #4ecdc4;"></i> Kimia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('bahan_list', lab='Biologi') }}">
+                    <i class="bi bi-circle-fill me-2" style="color: #45d161"></i> Biologi
+                </a>
+            </li>
+            <!-- Tautan ke Semua Lab tetap disediakan -->
+            <li class="nav-item mt-1">
+                <a class="nav-link text-white" href="{{ url_for('bahan_list', lab='Semua') }}">
+                    <i class="bi bi-list me-2"></i> Semua Lab
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- Alat -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#alatCollapse" aria-expanded="false">
+        <i class="bi bi-wrench me-2"></i> Alat
+    </a>
+    <div class="collapse" id="alatCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('alat_list', lab='Fisika') }}">
+                    <i class="bi bi-circle-fill me-2" style="color: #ff6b6b;"></i> Fisika
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('alat_list', lab='Kimia') }}">
+                    <i class="bi bi-circle-fill me-2" style="color: #4ecdc4;"></i> Kimia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('alat_list', lab='Biologi') }}">
+                    <i class="bi bi-circle-fill me-2" style="color: #45d161;"></i> Biologi
+                </a>
+            </li>
+            <!-- Tautan ke Semua Lab tetap disediakan -->
+            <li class="nav-item mt-1">
+                <a class="nav-link text-white" href="{{ url_for('alat_list', lab='Semua') }}">
+                    <i class="bi bi-list me-2"></i> Semua Lab
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- Kejadian -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#kejadianCollapse" aria-expanded="false">
+        <i class="bi bi-exclamation-triangle me-2"></i> Kejadian
+    </a>
+    <div class="collapse" id="kejadianCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <span class="text-muted small"> Tambah Kejadian</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_create', lab='Fisika') }}">
+                    <i class="bi bi-plus-circle me-2"></i> Fisika
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_create', lab='Kimia') }}">
+                    <i class="bi bi-plus-circle me-2"></i> Kimia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_create', lab='Biologi') }}">
+                    <i class="bi bi-plus-circle me-2"></i> Biologi
+                </a>
+            </li>
+            <li class="nav-item mt-2">
+                <span class="text-muted small"> Daftar Kejadian</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_list', lab='Fisika') }}">
+                    <i class="bi bi-list me-2"></i> Fisika
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_list', lab='Kimia') }}">
+                    <i class="bi bi-list me-2"></i> Kimia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_list', lab='Biologi') }}">
+                    <i class="bi bi-list me-2"></i> Biologi
+                </a>
+            </li>
+            <!-- Tautan ke Semua Lab tetap disediakan -->
+            <li class="nav-item mt-1">
+                <a class="nav-link text-white" href="{{ url_for('kejadian_list', lab='Semua') }}">
+                    <i class="bi bi-list me-2"></i> Semua Lab
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- Download Jadwal -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#downloadCollapse" aria-expanded="false">
+        <i class="bi bi-download me-2"></i> Download Jadwal
+    </a>
+    <div class="collapse" id="downloadCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('download_jadwal_excel', lab='Fisika') }}">
+                    <i class="bi bi-file-earmark-excel me-2"></i> Lab Fisika
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('download_jadwal_excel', lab='Kimia') }}">
+                    <i class="bi bi-file-earmark-excel me-2"></i> Lab Kimia
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('download_jadwal_excel', lab='Biologi') }}">
+                    <i class="bi bi-file-earmark-excel me-2"></i> Lab Biologi
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('download_jadwal_excel', lab='Semua') }}">
+                    <i class="bi bi-file-earmark-excel me-2"></i> Semua Lab
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- Berita Acara -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#beritaAcaraCollapse" aria-expanded="false">
+        <i class="bi bi-journal-text me-2"></i> Berita Acara
+    </a>
+    <div class="collapse" id="beritaAcaraCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('berita_acara_list') }}">
+                    <i class="bi bi-list-check me-2"></i> Daftar Berita Acara
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('berita_acara_penghapusan_create') }}">
+                    <i class="bi bi-trash me-2"></i> Tambah Penghapusan
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- Di bagian menu Laporan atau Analitik -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#laporanCollapse" aria-expanded="false">
+        <i class="bi bi-journal-text me-2"></i> Laporan
+    </a>
+    <div class="collapse" id="laporanCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('laporan_bulanan') }}">
+                    <i class="bi bi-calendar-month me-2"></i> Laporan Bulanan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('laporan_bulanan_perbandingan') }}">
+                    <i class="bi bi-graph-up-arrow me-2"></i> Perbandingan Bulanan
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<!-- templates/partials/sidebar_menu_items.html -->
+
+<!-- Pengaturan Admin -->
+<li class="list-group-item bg-dark border-0">
+    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse" aria-expanded="false">
+        <i class="bi bi-gear me-2"></i> Pengaturan
+    </a>
+    <div class="collapse" id="settingsCollapse">
+        <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('admin_settings') }}">
+                    <i class="bi bi-image me-2"></i> Favicon & Logo
+                </a>
+            </li>
+            <!-- Tambahkan menu pengaturan lainnya di sini -->
+        </ul>
+    </div>
+</li>
+<!-- Logout -->
+<li class="list-group-item bg-dark border-0 mt-3">
+    <a class="nav-link text-white btn btn-outline-light btn-sm w-100" href="{{ url_for('logout') }}">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
+    </a>
+</li>

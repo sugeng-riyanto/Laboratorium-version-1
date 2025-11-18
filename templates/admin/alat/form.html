@@ -1,0 +1,95 @@
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<!-- Di atas form -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<form method="POST">
+    {% if lab == "Semua" %}
+    <div class="mb-3">
+        <label class="form-label">Lab *</label>
+        <select name="nama_lab" class="form-select" required>
+            <option value="">-- Pilih Lab --</option>
+            <option value="Fisika">Fisika</option>
+            <option value="Kimia">Kimia</option>
+            <option value="Biologi">Biologi</option>
+            <option value="Semua">Semua</option>
+        </select>
+    </div>
+    {% else %}
+    <input type="hidden" name="nama_lab" value="{{ lab }}">
+    {% endif %}
+
+    <div class="mb-3">
+        <label class="form-label">Kode *</label>
+        <input type="text" name="kode" class="form-control" value="{{ alat.kode if alat else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nama Alat *</label>
+        <input type="text" name="nama_alat" class="form-control" value="{{ alat.nama_alat if alat else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Kuantitas (unit) *</label>
+        <input type="number" name="kuantitas" class="form-control" value="{{ alat.kuantitas if alat else 1 }}" min="1" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Satuan *</label>
+        <select name="satuan" class="form-select" id="satuanSelect" required>
+            <option value="">-- Pilih Satuan --</option>
+            {% for satuan in satuan_alat %}
+            <option value="{{ satuan }}" {% if alat and alat.satuan == satuan %}selected{% endif %}>{{ satuan }}</option>
+            {% endfor %}
+            <option value="custom" {% if alat and alat.satuan not in satuan_alat %}selected{% endif %}>Lainnya (isi manual)</option>
+        </select>
+    </div>
+    <div class="mb-3" id="customSatuanField" style="display:none;">
+        <label class="form-label">Satuan Manual *</label>
+        <input type="text" name="satuan_manual" class="form-control"
+               value="{% if alat and alat.satuan not in satuan_alat %}{{ alat.satuan }}{% endif %}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tanggal Masuk *</label>
+        <input type="date" name="tgl_masuk" class="form-control" value="{{ alat.tgl_masuk.strftime('%Y-%m-%d') if alat else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="baik" {% if not alat or alat.status == 'baik' %}selected{% endif %}>Baik</option>
+            <option value="rusak" {% if alat and alat.status == 'rusak' %}selected{% endif %}>Rusak</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Catatan</label>
+        <textarea name="catatan" class="form-control" rows="3">{{ alat.catatan if alat else '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('alat_list', lab=alat.nama_lab if alat else lab) }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<script>
+document.getElementById('satuanSelect').addEventListener('change', function() {
+    const customField = document.getElementById('customSatuanField');
+    customField.style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+// Inisialisasi saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('satuanSelect');
+    const customField = document.getElementById('customSatuanField');
+    if (select.value === 'custom') {
+        customField.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

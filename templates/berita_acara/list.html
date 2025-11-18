@@ -1,0 +1,98 @@
+<!-- templates/berita_acara/list.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Daftar Berita Acara{% endblock %}
+
+{% block content %}
+<h2>📋 Daftar Berita Acara</h2>
+<a href="{{ url_for('berita_acara_create') }}" class="btn btn-success mb-3">Tambah Berita Acara</a>
+<a href="{{ url_for('berita_acara_penghapusan_create') }}" class="btn btn-warning mb-3 ms-2">Tambah Penghapusan</a>
+<a href="{{ url_for('berita_acara_upload') }}" class="btn btn-info mb-3 ms-2">Upload Excel</a>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="beritaAcaraTable" class="table table-striped table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tanggal</th>
+                        <th>Jenis</th>
+                        <th>Nama Item</th>
+                        <th>Alasan</th>
+                        <th>Keterangan</th>
+                        <th>Petugas</th>
+                        <th>Status Follow Up</th>
+                        <th>Kuantitas Tindakan</th>
+                        <th>Tgl Tindakan</th>
+                        <th>Catatan Tindakan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in acara %}
+                    <tr>
+                        <td>{{ a.id }}</td>
+                        <td>{{ a.tanggal }}</td>
+                        <td>{{ a.jenis }}</td>
+                        <td>{{ a.nama_item }}</td>
+                        <td>{{ a.alasan }}</td>
+                        <td>{{ a.keterangan or '-' }}</td>
+                        <td>{{ a.nama_petugas }}</td>
+                        <td>
+                            <span class="badge bg-{% if a.status_follow_up == 'Belum Ditangani' %}secondary{% elif a.status_follow_up == 'Diganti' %}primary{% elif a.status_follow_up == 'Diperbaiki' %}warning{% elif a.status_follow_up == 'Diisi Ulang' %}success{% else %}info{% endif %}">
+                                {{ a.status_follow_up }}
+                            </span>
+                        </td>
+                        <td>{{ a.kuantitas_tindakan }}</td>
+                        <td>{{ a.tanggal_tindakan or '-' }}</td>
+                        <td>{{ a.catatan_tindakan or '-' }}</td>
+                        <td>
+                            <a href="{{ url_for('berita_acara_edit', id=a.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form method="POST" action="{{ url_for('berita_acara_delete', id=a.id) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus berita acara ini?')">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="12" class="text-center">Tidak ada data berita acara.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#beritaAcaraTable').DataTable({
+        "pageLength": 10,
+        "scrollY": "300px",
+        "scrollX": true,
+        "scrollCollapse": true,
+        "ordering": true,
+        "searching": true,
+        "language": {
+            "search": "Cari:",
+            "paginate": {
+                "previous": "Sebelumnya",
+                "next": "Berikutnya"
+            },
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            "emptyTable": "Tidak ada data tersedia"
+        },
+        "debug": false // Tambahkan ini untuk menyembunyikan alert
+    });
+});
+</script>
+{% endblock %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>

@@ -1,0 +1,32 @@
+<!-- templates/admin/guru/list.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}Daftar Guru{% endblock %}
+
+{% block content %}
+<h2>Daftar Guru</h2>
+<a href="{{ url_for('guru_create') }}" class="btn btn-primary mb-3">Tambah Guru</a>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nama Guru</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for g in guru %}
+    <tr>
+      <td>{{ g.id }}</td>
+      <td>{{ g.nama_guru }}</td>
+      <td>
+        <a href="{{ url_for('guru_edit', id=g.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <form method="POST" action="{{ url_for('guru_delete', id=g.id) }}" style="display:inline;" onsubmit="return confirm('Hapus guru ini?')">
+          <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

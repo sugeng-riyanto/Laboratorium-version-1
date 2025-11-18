@@ -1,0 +1,162 @@
+<!-- templates/dashboard.html -->
+
+{% extends "partials/base.html" %}
+
+{% macro render_schedule_table(grid, day_date_pairs, times, current_user, lab) %}
+<div class="table-responsive">
+    <div class="table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+    <table class="table table-bordered" style="background-color: #e8f5e9;">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th scope="col" style="width: 120px;">Sesi</th>
+                {% for day, date in day_date_pairs %}
+                <th scope="col" style="width: 200px; text-align: center;">
+                    {{ day }}<br>
+                    <small>{{ date }}</small>
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for time in times %}
+            <tr>
+                <td class="align-middle" style="background-color: #f5f5f5; font-weight: bold; text-align: center;">
+                    {{ time }}
+                </td>
+                {% for day, date in day_date_pairs %}
+                    {% set day_name = day %}
+                    <td style="min-height: 80px; vertical-align: top; padding: 10px; background-color: #e8f5e9;">
+                        {% for j in grid[time][day_name] %}
+                            <div class="bg-warning p-2 mb-2 rounded border" style="font-size: 0.85rem; text-align: center;">
+                                <strong>{{ j.nama_guru }}</strong><br>
+                                <small class="text-truncate d-block">{{ j.kelas }} • {{ j.judul_praktikum }}</small><br>
+                                {% if current_user.is_authenticated %}
+                                    <form method="POST" action="{{ url_for('cancel_booking', id=j.id) }}" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Batalkan pemesanan ini?')">Batalkan</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            {% if current_user.is_authenticated %}
+                                <!-- Tombol Pesan diubah untuk membuka formulir dengan sesi yang sudah dipilih -->
+                                <a href="{{ url_for('booking_form', day=day_name, date=date, time=time, lab=lab) }}" 
+                                   class="btn btn-sm btn-success w-100">Pesan</a>
+                            {% else %}
+                                <a href="{{ url_for('login') }}" 
+                                   class="btn btn-sm btn-secondary w-100">Login untuk Pesan</a>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endmacro %}
+
+{% block title %}Jadwal Booking Lab Fisika, Kimia, atau Biologi{% endblock %}
+
+{% block content %}
+<!-- Di atas tombol Minggu Sebelumnya -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Jadwal Booking Lab Fisika, Kimia, atau Biologi</h2>
+    <div>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-info btn-sm me-2">📊 Dashboard Analitik</a>
+            <a href="{{ url_for('admin_index') }}" class="btn btn-outline-primary btn-sm me-2">Admin Panel</a>
+            <!-- Ganti tombol Download Excel dengan dropdown -->
+            <div class="btn-group">
+                <a href="#" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                    Download Jadwal (.xlsx)
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url_for('download_jadwal_excel', lab='Fisika') }}">Lab Fisika</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('download_jadwal_excel', lab='Kimia') }}">Lab Kimia</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('download_jadwal_excel', lab='Biologi') }}">Lab Biologi</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ url_for('download_jadwal_excel', lab='Semua') }}">Semua Lab</a></li>
+                </ul>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm">Login untuk Pesan</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Alert Login Berhasil -->
+{% if current_user.is_authenticated %}
+<div id="loginAlert" class="alert alert-success text-center" role="alert">
+    Login berhasil!
+</div>
+
+<style>
+#loginAlert.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+</style>
+
+<script>
+setTimeout(function() {
+    var alert = document.getElementById('loginAlert');
+    if (alert) {
+        alert.classList.add('fade-out');
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 500); // Durasi transisi 0.5 detik
+    }
+}, 3000); // Tampilkan alert selama 3 detik
+</script>
+{% endif %}
+
+<!-- Navigasi Minggu -->
+<div class="d-flex flex-column align-items-center mb-4">
+    <div class="btn-group w-100" role="group">
+        <a href="{{ url_for('dashboard', start_date=prev_week_date) }}" 
+           class="btn btn-primary">Minggu Sebelumnya</a>
+        <button type="button" class="btn btn-light text-truncate" style="max-width: 150px; overflow: hidden;">
+            {{ day_date_pairs[0][1] }} – {{ day_date_pairs[4][1] }}
+        </button>
+        <a href="{{ url_for('dashboard', start_date=next_week_date) }}" 
+           class="btn btn-primary">Minggu Berikutnya</a>
+    </div>
+</div>
+
+<!-- Tabs for Labs -->
+<ul class="nav nav-tabs mb-4" id="labTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="fisika-tab" data-bs-toggle="tab" data-bs-target="#fisika" type="button" role="tab" aria-controls="fisika" aria-selected="true">Lab Fisika</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="kimia-tab" data-bs-toggle="tab" data-bs-target="#kimia" type="button" role="tab" aria-controls="kimia" aria-selected="false">Lab Kimia</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="biologi-tab" data-bs-toggle="tab" data-bs-target="#biologi" type="button" role="tab" aria-controls="biologi" aria-selected="false">Lab Biologi</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="labTabContent">
+    <!-- Lab Fisika -->
+    <div class="tab-pane fade show active" id="fisika" role="tabpanel" aria-labelledby="fisika-tab">
+        <h4>Lab Fisika</h4>
+        {{ render_schedule_table(schedule_grids['Fisika'], day_date_pairs, times, current_user, 'Fisika') }}
+    </div>
+
+    <!-- Lab Kimia -->
+    <div class="tab-pane fade" id="kimia" role="tabpanel" aria-labelledby="kimia-tab">
+        <h4>Lab Kimia</h4>
+        {{ render_schedule_table(schedule_grids['Kimia'], day_date_pairs, times, current_user, 'Kimia') }}
+    </div>
+
+    <!-- Lab Biologi -->
+    <div class="tab-pane fade" id="biologi" role="tabpanel" aria-labelledby="biologi-tab">
+        <h4>Lab Biologi</h4>
+        {{ render_schedule_table(schedule_grids['Biologi'], day_date_pairs, times, current_user, 'Biologi') }}
+    </div>
+</div>
+
+
+{% endblock %}

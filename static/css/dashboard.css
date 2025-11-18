@@ -1,0 +1,30 @@
+/* static/css/dashboard.css */
+
+/* Responsif untuk grafik */
+@media (max-width: 767px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .display-6 {
+        font-size: 1.5rem;
+    }
+
+    canvas {
+        height: 200px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .display-6 {
+        font-size: 1.25rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+}

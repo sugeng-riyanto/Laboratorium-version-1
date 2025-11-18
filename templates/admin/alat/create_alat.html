@@ -1,0 +1,92 @@
+<!-- templates/admin/alat/create_alat.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <!-- ✅ Ganti hidden field dengan dropdown lab -->
+    <div class="mb-3">
+        <label class="form-label">Laboratorium *</label>
+        <select name="nama_lab" class="form-select" required>
+            <option value="">-- Pilih Laboratorium --</option>
+            <option value="Fisika">Fisika</option>
+            <option value="Kimia">Kimia</option>
+            <option value="Biologi">Biologi</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Kode *</label>
+        <input type="text" name="kode" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nama Alat *</label>
+        <input type="text" name="nama_alat" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Kuantitas (unit) *</label>
+        <input type="number" name="kuantitas" class="form-control" min="1" value="1" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Satuan *</label>
+        <select name="satuan" class="form-select" id="satuanSelect" required>
+            <option value="">-- Pilih Satuan --</option>
+            {% for satuan in satuan_alat %}
+            <option value="{{ satuan }}">{{ satuan }}</option>
+            {% endfor %}
+            <option value="custom">Lainnya (isi manual)</option>
+        </select>
+    </div>
+    <div class="mb-3" id="customSatuanField" style="display:none;">
+        <label class="form-label">Satuan Manual *</label>
+        <input type="text" name="satuan_manual" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tanggal Masuk *</label>
+        <input type="date" name="tgl_masuk" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="baik" selected>Baik</option>
+            <option value="rusak">Rusak</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Catatan</label>
+        <textarea name="catatan" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('alat_list') }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<script>
+document.getElementById('satuanSelect').addEventListener('change', function() {
+    const customField = document.getElementById('customSatuanField');
+    customField.style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('satuanSelect');
+    const customField = document.getElementById('customSatuanField');
+    if (select.value === 'custom') {
+        customField.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

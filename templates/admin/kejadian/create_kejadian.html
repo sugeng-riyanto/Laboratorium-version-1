@@ -1,0 +1,102 @@
+<!-- templates/admin/kejadian/create_kejadian.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form method="POST">
+    <!-- Hidden field untuk nama_lab agar tetap dikirim saat submit -->
+    <input type="hidden" name="nama_lab" value="{{ lab }}">
+
+    <!-- Hanya tampilkan nama lab sebagai teks readonly untuk tambah -->
+    <div class="mb-3">
+        <label class="form-label">Lab</label>
+        <input type="text" class="form-control" value="{{ lab }}" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Alat yang Rusak *</label>
+        <select name="alat_id" class="form-select" id="alatSelect" required>
+            <option value="">-- Pilih Alat --</option>
+            {% for a in alat_list %}
+            <option value="{{ a.id }}">
+                {{ a.kode }} - {{ a.nama_alat }} (Stok: {{ a.kuantitas }}, Rusak: {{ a.rusak }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tanggal Kejadian *</label>
+        <input type="date" name="tanggal_kejadian" class="form-control" required>
+    </div>
+
+    <!-- Dropdown untuk Nama Guru -->
+    <div class="mb-3">
+        <label class="form-label">Nama Guru *</label>
+        <select name="nama_guru" class="form-select" required>
+            <option value="">-- Pilih Guru --</option>
+            {% for g in guru_list %}
+            <option value="{{ g.nama_guru }}">{{ g.nama_guru }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Dropdown untuk Kelas -->
+    <div class="mb-3">
+        <label class="form-label">Kelas *</label>
+        <select name="kelas" class="form-select" required>
+            <option value="">-- Pilih Kelas --</option>
+            {% for k in kelas_list %}
+            <option value="{{ k.nama_kelas }}">{{ k.nama_kelas }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Dropdown untuk Sesi -->
+    <div class="mb-3">
+        <label class="form-label">Sesi *</label>
+        <select name="sesi" class="form-select" required>
+            <option value="">-- Pilih Sesi --</option>
+            {% for time in times %}
+            <option value="{{ time }}">{{ time }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Jumlah Alat Rusak *</label>
+        <input type="number" name="kuantitas_rusak" class="form-control" min="1" value="1" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deskripsi Kejadian</label>
+        <textarea name="deskripsi" class="form-control" rows="4"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status Penanganan</label>
+        <select name="status" class="form-select">
+            <option value="belum ditangani" selected>Belum Ditangani</option>
+            <option value="sudah diperbaiki">Sudah Diperbaiki</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('kejadian_list', lab=lab) }}" class="btn btn-secondary">Batal</a>
+</form>
+
+<script>
+// Reload halaman saat lab dipilih untuk mengisi daftar alat
+// (Opsional, jika Anda ingin mengganti daftar alat berdasarkan lab yang dipilih di dropdown)
+// Namun, karena lab sudah dipilih di URL, biasanya ini tidak diperlukan di form create.
+// document.getElementById('labSelect').addEventListener('change', function () {
+//     const selectedLab = this.value;
+//     if (selectedLab) {
+//         window.location.href = "{{ url_for('kejadian_create', lab='PLACEHOLDER') }}".replace('PLACEHOLDER', selectedLab);
+//     }
+// });
+</script>
+{% endblock %}

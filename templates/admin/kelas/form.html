@@ -1,0 +1,16 @@
+<!-- templates/admin/kelas/form.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<form method="POST">
+  <div class="mb-3">
+    <label class="form-label">Nama Kelas *</label>
+    <input type="text" name="nama_kelas" class="form-control" value="{{ kelas.nama_kelas if kelas else '' }}" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Simpan</button>
+  <a href="{{ url_for('kelas_list') }}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

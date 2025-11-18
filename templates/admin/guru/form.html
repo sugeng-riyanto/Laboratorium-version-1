@@ -1,0 +1,28 @@
+<!-- templates/admin/guru/form.html -->
+{% extends "partials/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="nama_guru" class="form-label">Nama Guru *</label>
+        <input type="text" class="form-control" id="nama_guru" name="nama_guru" value="{{ guru.nama_guru if guru else '' }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('guru_list') }}" class="btn btn-secondary">Batal</a>
+</form>
+<script>
+// Jika ingin reload halaman saat ganti lab (opsional)
+document.getElementById('labSelect').addEventListener('change', function() {
+    const selectedLab = this.value;
+    if (selectedLab) {
+        // Gunakan url_for untuk membuat URL yang benar
+        const baseUrl = "{{ url_for('kejadian_create', lab='LAB_PLACEHOLDER') }}";
+        window.location.href = baseUrl.replace('LAB_PLACEHOLDER', selectedLab);
+    }
+});
+</script>
+{% endblock %}

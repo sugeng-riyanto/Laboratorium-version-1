@@ -2949,22 +2949,16 @@ def download_laporan_xlsx():
 # app.py
 
 if __name__ == '__main__':
-    # === 1. JALANKAN THREAD PENGECEKAN EXPIRED ===
     import threading
     expired_thread = threading.Thread(target=schedule_expired_check, daemon=True)
     expired_thread.start()
 
-    # === 2. INISIALISASI DATABASE & FOLDER ===
     with app.app_context():
-        # Buat semua tabel
         db.create_all()
-        
-        # Buat folder uploads untuk file Excel
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        
-        # ✅ Buat folder static/uploads untuk favicon & logo
         static_uploads_folder = os.path.join(app.static_folder, 'uploads')
         os.makedirs(static_uploads_folder, exist_ok=True)
 
-    # === 3. JALANKAN SERVER FLASK ===
-    app.run(host='0.0.0.0', port=5000, debug=False)  # ⚠️ Matikan debug di produksi
+    # Use the PORT environment variable provided by Railway
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
